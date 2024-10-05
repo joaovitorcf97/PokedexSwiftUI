@@ -11,29 +11,45 @@ struct OnboardingView:  View {
     @ObservedObject var viewModel: OnboardViewModel
     
         var body: some View {
-            TabView(selection: $viewModel.currentStep) {
-                ForEach(0..<viewModel.onboardingSteps.count, id: \.self) { index in
+            ZStack {
+                if viewModel.showSplash {
+                    SplashView()
+                } else {
                     VStack {
-                        trainersImages(image: viewModel.onboardingSteps[index].image)
-                        Spacer().frame(height: 45)
-                        titleAndDescription(
-                            title: viewModel.onboardingSteps[index].title,
-                            description: viewModel.onboardingSteps[index].description
-                        )
-                       
-                    }
-                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
-                    .padding()
+                        TabView(selection: $viewModel.currentStep) {
+                            ForEach(0..<viewModel.onboardingSteps.count, id: \.self) { index in
+                                VStack {
+                                    trainersImages(image: viewModel.onboardingSteps[index].image)
+                                    Spacer().frame(height: 45)
+                                    titleAndDescription(
+                                        title: viewModel.onboardingSteps[index].title,
+                                        description: viewModel.onboardingSteps[index].description
+                                    )
+                                   
+                                }
+                                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
+                                .padding()
 
+                            }
+                        }
+                        .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
+                        .animation(.easeInOut(duration: 0.5), value: viewModel.currentStep)
+                        
+                        Spacer().frame(height: 24)
+                        onboardingProgressView
+                        Spacer().frame(height: 24)
+                        continuebutton(buttonText: viewModel.onboardingSteps[viewModel.currentStep].buttonText)
+                    }
                 }
             }
-            .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
-            .animation(.easeInOut(duration: 0.5), value: viewModel.currentStep)
+            .onAppear {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                    withAnimation {
+                        self.viewModel.showSplash = false
+                    }
+                }
+            }
             
-            Spacer().frame(height: 24)
-            onboardingProgressView
-            Spacer().frame(height: 24)
-            continuebutton(buttonText: viewModel.onboardingSteps[viewModel.currentStep].buttonText)
         }
         
     func trainersImages(image: String) -> some View {

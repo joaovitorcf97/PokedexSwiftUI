@@ -8,6 +8,7 @@
 import Foundation
 
 class OnboardViewModel: ObservableObject {
+    @Published var showSplash: Bool = true
     @Published var currentStep: Int = 0
     @Published var onboardingSteps: [OnboardingStep] = [
         OnboardingStep(
@@ -20,7 +21,7 @@ class OnboardViewModel: ObservableObject {
             image: "trainer02",
             title: "Mantenha sua Pokédex atualizada",
             description: "Cadastre-se e mantenha seu perfil, pokémon favoritos, configurações e muito mais, salvos no aplicativo, mesmo sem conexão com a internet.",
-            buttonText: "Vamos começar"
+            buttonText: "Vamos começar!"
         ),
     ]
 }
