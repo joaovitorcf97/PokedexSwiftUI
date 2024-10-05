@@ -8,39 +8,46 @@
 import SwiftUI
 
 struct OnboardingView:  View {
+    @ObservedObject var viewModel: OnboardViewModel
     
         var body: some View {
-            VStack {
-                trainersImages
-                Spacer().frame(height: 45)
-                titleAndDescription
-                Spacer().frame(height: 24)
-                onboardingProgressView
-                Spacer().frame(height: 24)
-                continuebutton
+            TabView(selection: $viewModel.currentStep) {
+                ForEach(0..<viewModel.onboardingSteps.count, id: \.self) { index in
+                    VStack {
+                        trainersImages(image: viewModel.onboardingSteps[index].image)
+                        Spacer().frame(height: 45)
+                        titleAndDescription(
+                            title: viewModel.onboardingSteps[index].title,
+                            description: viewModel.onboardingSteps[index].description
+                        )
+                       
+                    }
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
+                    .padding()
+
+                }
             }
-            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
-            .padding()
+            .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
+            .animation(.easeInOut(duration: 0.5), value: viewModel.currentStep)
+            
+            Spacer().frame(height: 24)
+            onboardingProgressView
+            Spacer().frame(height: 24)
+            continuebutton(buttonText: viewModel.onboardingSteps[viewModel.currentStep].buttonText)
         }
         
-        var trainersImages: some View {
-            ZStack {
-                Image("trainer01")
-                    .offset(x: -50)
-                
-                Image("trainer02")
-                    .offset(x: 50)
-            }
-        }
+    func trainersImages(image: String) -> some View {
+        Image(image)
+    }
         
-        var titleAndDescription: some View {
+    func titleAndDescription(title: String, description: String) -> some View {
             VStack(spacing: 16) {
-                Text("Todos os Pokémons em um só lugar")
+                Text(title)
                     .font(Font.custom("Poppins-Medium.ttf", size: 26))
                     .multilineTextAlignment(.center)
                     .foregroundStyle(Color("Primary"))
                 
-                Text("Acesse uma vasta lista de Pokémons de todas as gerações já feitas pela Nintendo")
+                Text(description)
                     .font(Font.custom("Poppins-Medium.ttf", size: 16))
                     .multilineTextAlignment(.center)
                     .foregroundStyle(Color("Secondary"))
@@ -49,35 +56,39 @@ struct OnboardingView:  View {
         
         var onboardingProgressView: some View {
             HStack {
-                Rectangle()
-                    .frame(width: 28, height: 8)
-                    .clipShape(.capsule)
-                    .foregroundStyle(Color("DarkBlue"))
-                Circle()
-                    .frame(width: 8, height: 8)
-                    .foregroundStyle(Color(.lightGray))
+                ForEach(0..<viewModel.onboardingSteps.count, id: \.self) { index in
+                    Rectangle()
+                        .frame(width: viewModel.currentStep == index ? 28: 8, height: 8)
+                        .clipShape(.capsule)
+                        .foregroundStyle(viewModel.currentStep == index ? Color("DarkBlue"): Color(.lightGray))
+                        .animation(.easeInOut(duration: 0.3), value: viewModel.currentStep)
+                }
             }
         }
         
-        var continuebutton: some View {
+        func continuebutton(buttonText: String) -> some View {
             Button(action: {
-                
+                if viewModel.currentStep < viewModel.onboardingSteps.count - 1 {
+                    viewModel.currentStep += 1
+                }
+                viewModel.currentStep = 1
             }, label: {
                 Rectangle()
                     .frame(height: 58)
                     .clipShape(.capsule)
                     .foregroundStyle(Color("DarkBlue"))
                     .overlay {
-                        Text("Continuar")
+                        Text(buttonText)
                             .font(Font.custom("Poppins-Bold.ttf", size: 18))
                             .foregroundStyle(Color(.white))
                             
                     }
             })
+            .padding()
         }
     }
 
 
 #Preview {
-    OnboardingView()
+    OnboardingView(viewModel: OnboardViewModel())
 }
