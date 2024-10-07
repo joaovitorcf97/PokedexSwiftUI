@@ -22,6 +22,12 @@ class OnboardViewModel: ObservableObject {
             title: "Mantenha sua Pokédex atualizada",
             description: "Cadastre-se e mantenha seu perfil, pokémon favoritos, configurações e muito mais, salvos no aplicativo, mesmo sem conexão com a internet.",
             buttonText: "Vamos começar!"
-        ),
+        )
+//        OnboardingStep(
+//            image: "trainers05",
+//            title: "Está pronto para essa aventura?",
+//            description: "Basta criar uma conta e começar a explorar o mundo dos Pokémon hoje!.",
+//            buttonText: "Criar conta"
+//        ),
     ]
 }
